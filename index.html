@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>智学网+ Web</title>
+<base href="https://zhixueapp.applinzi.com/frontend/" />
+<meta name="ViewPort" content="initial-scale=1, minimum-scale=1, width=device-width"/>
+<meta name="HandheldFriendly" content="true" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="renderer" content="webkit">
+<style type="text/css">
+html,body{width:100%;height:100%;cursor:default}
+html,body,p,h2,div{margin:0;padding:0}
+body{background:#2980B9;text-align:center;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}
+html{font:12px "Segoe UI","Microsoft YaHei",FreeSans,Arimo,"Droid Sans","Hiragino Sans GB","Hiragino Sans GB W3",Arial,sans-serif}
+h2{margin-bottom:25px;font-size:18px;font-weight:300;color:#2980B9}
+p{line-height:1.5em;font-size:12px;color:#95a2a9;margin-bottom:5px}
+.title{position:relative;top:75px;margin-bottom:.7em;line-height:30px;font-size:26px;font-weight:300;color:#fff;text-shadow:0 0 4px #666666}
+.box{position:relative;top:80px;width:600px;max-width:85%;margin:0 auto;background:#fff;padding:15px;box-shadow:0 0 50px #2964B9}
+.main{font-size:18px;color:#000;font-weight:500;line-height:1.7em;margin:0 0 10px}
+.foot{position:relative;top:80px;margin:15px 15px 0;font-size:12px;color:#4eb0f8}
+.block-bar{background:#3498DB;color:#ffffff;padding:15px 20px;margin:25px -15px -15px;line-height:1.4em;font-size:14px;text-align:center;word-break:break-all;white-space:pre-wrap}
+    .login-field{height:50px;border-top:none;border-right:none;border-left:none;border-bottom:1px solid #2980B9;width:80%;max-width:200px;}
+</style>
+<script>
+    function setCookie(name,value,seconds) 
+	{
+		var exp = new Date();
+		exp.setTime(exp.getTime() + seconds*1000);
+		document.cookie = name + "="+ escape (value) + ";expires=" + exp.toGMTString();
+	}
+    function getCookie(name)
+    {
+        var arr,reg=new RegExp("(^| )"+name+"=([^;]*)(;|$)");
+        if(arr=document.cookie.match(reg)) return unescape(arr[2]);
+        else return null;
+    }
+    
+    var token;
+    var user_score;
+    function do_login() {
+        var username=document.getElementById('login-username').value;
+        
+        if(document.getElementById('login-password').style.display=='inline') {
+            var xhr1=new XMLHttpRequest;
+            xhr1.open('POST','pw_encode.php',false);
+            xhr1.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;");
+            xhr1.send('password='+document.getElementById('login-password').value);
+            if(!xhr1.responseText) {
+                document.getElementById('help-no-login').click();
+                return;
+            }
+            var xhr2=new XMLHttpRequest;
+            xhr2.open('GET','/app/home/t/login?loginName='+username+'&password='+xhr1.responseText,false);
+            xhr2.send(null);
+            var result=eval('('+xhr2.responseText+')');
+        	token=result['result']['token'];
+            if(!token) {
+                document.getElementById('help-no-login').click();
+                return;
+            }
+        	setCookie('zx_user_token',token,600);
+        	show_info();
+            return;
+        }
+        
+        var person_name=document.getElementById('login-person_name').value;
+        var student_no=document.getElementById('login-student_no').value;
+        var xhr=new XMLHttpRequest;
+        xhr.open('POST','do_login.php',false);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;");
+        xhr.send(encodeURI('username='+username+'&person_name='+person_name+"&student_no="+student_no));
+        var result=eval('('+xhr.responseText+')');
+        if(result['error']) {
+            if(result['error']=='ERR_UNAUTHORIZED' || result['error']=='ERR_NO_LOGIN' ) {
+                document.getElementById('login-password').style.display='inline';
+                document.getElementById('login-person_name').style.display='none';
+                document.getElementById('login-student_no').style.display='none';
+            }
+            else alert(result['error']);
+            return;
+        }
+        token=result['result']['token'];
+        setCookie('zx_user_token',token,600);
+        show_info();
+    }
+    function try_cookie_then_interactive() {
+        var c=getCookie('zx_user_token');
+        if(!c) document.getElementById('login-box').style.display='block';
+        else {
+            token=c;
+            show_info();
+        }
+    }
+    function show_info() {
+        document.getElementById('login-box').style.display='none';
+        document.getElementById('help-no-login').style.display='none';
+        get_last_exam();
+        document.getElementById('content-title').innerHTML='信息';
+        document.getElementById('last-exam').style.display='block';
+    }
+    function get_last_exam() {
+        var xhr=new XMLHttpRequest;
+        xhr.open('GET','/app/student/get/exam/list?&pageIndex=1&token='+token+'&pageSize=1&version=1.1',false);
+        xhr.send(null);
+        var result=eval('('+xhr.responseText+')');
+        document.getElementById('exam-name').innerHTML=result['result'][0]['examName'];
+        document.getElementById('score-total').innerHTML=result['result'][0]['score'];
+        document.getElementById('class-rank').innerHTML=result['result'][0]['rank']+'/'+result['result'][0]['classStudentsCount'];
+        
+        user_score=result['result'][0]['score'];
+        
+        var subjects=result['result'][0]['subjectScores'];
+        for(var i=0;i<subjects.length;i++) {
+            var score_item=document.createElement("tr");
+            var a=document.createElement("td");
+            a.innerHTML=subjects[i]['subjectName'];
+            var b=document.createElement("td");
+            b.innerHTML=subjects[i]['score'];
+            score_item.appendChild(a);
+            score_item.appendChild(b);
+            document.getElementById('scores').appendChild(score_item);
+        }
+        get_ranks(result['result'][0]['examId']);
+    }
+	function get_ranks(exam_id) {
+        var xhr=new XMLHttpRequest;
+        xhr.open("GET","get_classes.php?"+"examId="+exam_id+"&token="+token,false);
+        xhr.send(null);
+        var result=eval('('+xhr.responseText+')');
+        result=result["result"]["examClasses"];
+        
+        var my=0,total=0,exec_count=0;
+        
+        for(var i=0;i<result.length;i++) {
+            get_rank(exam_id,result[i]['clazzId'],function(r) {
+                my+=r["rank"];
+                total+=r["totalNum"];
+                exec_count++;
+                if(exec_count==result.length) document.getElementById("grade-rank").innerHTML=my+"/"+total;
+            });
+        }
+    }
+    function get_rank(exam_id,class_id,callback) {
+        var xhr=new XMLHttpRequest;
+        xhr.open("GET","get_class_rank.php?"+"examId="+exam_id+"&classId="+class_id+"&userScore="+user_score+"&token="+token,true);
+        xhr.onreadystatechange=function() {
+            if(xhr.readyState==4) {
+                var result=eval('('+xhr.responseText+')');
+                callback(result["result"]["userRank"]);
+            }
+        }
+        xhr.send(null);
+    }
+</script>
+</head>
+<body onload="try_cookie_then_interactive()">
+<p class="title" id="content-title">智学网帐号连接</p>
+<div class="box" id="login-box" style="display:none">
+<form action="javascript:;">
+    <input type="text" id="login-username" class="login-field" placeholder="智学网学号或手机号" /><br>
+    <input type="text" id="login-person_name" class="login-field" placeholder="姓名" /><br>
+    <input type="text" id="login-student_no" class="login-field" placeholder="学号（胸卡号）" />
+    <input type="password" id="login-password" class="login-field" placeholder="密码" style="display:none" />
+</form>
+<p class="block-bar" onclick="do_login()">登录</p>
+</div>
+<div class="box" id="help-login-box" style="display:none">
+    密码登录目前处于测试版，含大写字母或特殊字符的密码无法登录。如果您无法登录，请<a href="https://www.ifxor.com/archives/241/">下载我们的“智学网+”App</a>成功登录一次后，在这里进行登录。<br>
+<p class="block-bar" onclick="document.getElementById('help-login-box').style.display='none';document.getElementById('login-box').style.display='block';">我知道了</p>
+</div>
+<div class="box" id="last-exam" style="display:none">
+    <table id="scores" style="width:100%">
+        <tr><td>总分</td><td id="score-total"></td></tr>
+        <tr><td>班级排名</td><td id="class-rank"></td></tr>
+        <tr><td>年级排名</td><td id="grade-rank">正在计算数据</td></tr>
+    </table>
+    <p class="block-bar" id="exam-name"></p>
+</div>
+<p class="foot" id="help-no-login" onclick="document.getElementById('help-login-box').style.display='block';document.getElementById('login-box').style.display='none';">无法登录？</p>
+<p class="foot">&copy; 2016 hydrocloud.net.</p>
+</body>
+</html>
