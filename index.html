@@ -37,6 +37,7 @@ p{line-height:1.5em;font-size:12px;color:#95a2a9;margin-bottom:5px}
     var token;
     var user_score;
     function do_login() {
+    	alert('do_login');
         var username=document.getElementById('login-username').value;
         
         if(document.getElementById('login-password').style.display=='inline') {
@@ -65,10 +66,12 @@ p{line-height:1.5em;font-size:12px;color:#95a2a9;margin-bottom:5px}
         var person_name=document.getElementById('login-person_name').value;
         var student_no=document.getElementById('login-student_no').value;
         var xhr=new XMLHttpRequest;
+        alert('xhr.open do_login.php');
         xhr.open('POST','https://zhixueapp.applinzi.com/frontend/do_login.php',false);
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;");
         xhr.send(encodeURI('username='+username+'&person_name='+person_name+"&student_no="+student_no));
         var result=eval('('+xhr.responseText+')');
+        alert(xhr.responseText);
         if(result['error']) {
             if(result['error']=='ERR_UNAUTHORIZED' || result['error']=='ERR_NO_LOGIN' ) {
                 document.getElementById('login-password').style.display='inline';
