@@ -42,7 +42,7 @@ p{line-height:1.5em;font-size:12px;color:#95a2a9;margin-bottom:5px}
         
         if(document.getElementById('login-password').style.display=='inline') {
             var xhr1=new XMLHttpRequest;
-            xhr1.open('POST','https://zhixueapp.applinzi.com/frontend/pw_encode.php',false);
+            xhr1.open('POST','http://zhixueapp.applinzi.com/frontend/pw_encode.php',false);
             xhr1.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;");
             xhr1.send('password='+document.getElementById('login-password').value);
             if(!xhr1.responseText) {
@@ -50,7 +50,7 @@ p{line-height:1.5em;font-size:12px;color:#95a2a9;margin-bottom:5px}
                 return;
             }
             var xhr2=new XMLHttpRequest;
-            xhr2.open('GET','https://zhixueapp.applinzi.com/app/home/t/login?loginName='+username+'&password='+xhr1.responseText,false);
+            xhr2.open('GET','http://zhixueapp.applinzi.com/app/home/t/login?loginName='+username+'&password='+xhr1.responseText,false);
             xhr2.send(null);
             var result=eval('('+xhr2.responseText+')');
         	token=result['result']['token'];
@@ -67,7 +67,7 @@ p{line-height:1.5em;font-size:12px;color:#95a2a9;margin-bottom:5px}
         var student_no=document.getElementById('login-student_no').value;
         var xhr=new XMLHttpRequest;
         alert('xhr.open do_login.php');
-        xhr.open('POST','https://zhixueapp.applinzi.com/frontend/do_login.php',false);
+        xhr.open('POST','http://zhixueapp.applinzi.com/frontend/do_login.php',false);
         alert('xhr.setRequestHeader');
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;");
         alert('xhr.send');
@@ -104,7 +104,7 @@ p{line-height:1.5em;font-size:12px;color:#95a2a9;margin-bottom:5px}
     }
     function get_last_exam() {
         var xhr=new XMLHttpRequest;
-        xhr.open('GET','https://zhixueapp.applinzi.com/app/student/get/exam/list?&pageIndex=1&token='+token+'&pageSize=1&version=1.1',false);
+        xhr.open('GET','http://zhixueapp.applinzi.com/app/student/get/exam/list?&pageIndex=1&token='+token+'&pageSize=1&version=1.1',false);
         xhr.send(null);
         var result=eval('('+xhr.responseText+')');
         document.getElementById('exam-name').innerHTML=result['result'][0]['examName'];
@@ -128,7 +128,7 @@ p{line-height:1.5em;font-size:12px;color:#95a2a9;margin-bottom:5px}
     }
 	function get_ranks(exam_id) {
         var xhr=new XMLHttpRequest;
-        xhr.open("GET","https://zhixueapp.applinzi.com/frontend/get_classes.php?"+"examId="+exam_id+"&token="+token,false);
+        xhr.open("GET","http://zhixueapp.applinzi.com/frontend/get_classes.php?"+"examId="+exam_id+"&token="+token,false);
         xhr.send(null);
         var result=eval('('+xhr.responseText+')');
         result=result["result"]["examClasses"];
@@ -146,7 +146,7 @@ p{line-height:1.5em;font-size:12px;color:#95a2a9;margin-bottom:5px}
     }
     function get_rank(exam_id,class_id,callback) {
         var xhr=new XMLHttpRequest;
-        xhr.open("GET","https://zhixueapp.applinzi.com/frontend/get_class_rank.php?"+"examId="+exam_id+"&classId="+class_id+"&userScore="+user_score+"&token="+token,true);
+        xhr.open("GET","http://zhixueapp.applinzi.com/frontend/get_class_rank.php?"+"examId="+exam_id+"&classId="+class_id+"&userScore="+user_score+"&token="+token,true);
         xhr.onreadystatechange=function() {
             if(xhr.readyState==4) {
                 var result=eval('('+xhr.responseText+')');
@@ -169,7 +169,7 @@ p{line-height:1.5em;font-size:12px;color:#95a2a9;margin-bottom:5px}
 <p class="block-bar" onclick="do_login()">登录</p>
 </div>
 <div class="box" id="help-login-box" style="display:none">
-    密码登录目前处于测试版，含大写字母或特殊字符的密码无法登录。如果您无法登录，请<a href="https://www.ifxor.com/archives/241/">下载我们的“智学网+”App</a>成功登录一次后，在这里进行登录。<br>
+    密码登录目前处于测试版，含大写字母或特殊字符的密码无法登录。如果您无法登录，请<a href="http://www.ifxor.com/archives/241/">下载我们的“智学网+”App</a>成功登录一次后，在这里进行登录。<br>
 <p class="block-bar" onclick="document.getElementById('help-login-box').style.display='none';document.getElementById('login-box').style.display='block';">我知道了</p>
 </div>
 <div class="box" id="last-exam" style="display:none">
