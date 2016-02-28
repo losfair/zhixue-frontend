@@ -2,7 +2,6 @@
 <html>
 <head>
 <title>智学网+ Web</title>
-<base href="https://zhixueapp.applinzi.com/frontend/" />
 <meta name="ViewPort" content="initial-scale=1, minimum-scale=1, width=device-width"/>
 <meta name="HandheldFriendly" content="true" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
@@ -42,7 +41,7 @@ p{line-height:1.5em;font-size:12px;color:#95a2a9;margin-bottom:5px}
         
         if(document.getElementById('login-password').style.display=='inline') {
             var xhr1=new XMLHttpRequest;
-            xhr1.open('POST','pw_encode.php',false);
+            xhr1.open('POST','https://zhixueapp.applinzi.com/frontend/pw_encode.php',false);
             xhr1.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;");
             xhr1.send('password='+document.getElementById('login-password').value);
             if(!xhr1.responseText) {
@@ -50,7 +49,7 @@ p{line-height:1.5em;font-size:12px;color:#95a2a9;margin-bottom:5px}
                 return;
             }
             var xhr2=new XMLHttpRequest;
-            xhr2.open('GET','/app/home/t/login?loginName='+username+'&password='+xhr1.responseText,false);
+            xhr2.open('GET','https://zhixueapp.applinzi.com/app/home/t/login?loginName='+username+'&password='+xhr1.responseText,false);
             xhr2.send(null);
             var result=eval('('+xhr2.responseText+')');
         	token=result['result']['token'];
@@ -66,7 +65,7 @@ p{line-height:1.5em;font-size:12px;color:#95a2a9;margin-bottom:5px}
         var person_name=document.getElementById('login-person_name').value;
         var student_no=document.getElementById('login-student_no').value;
         var xhr=new XMLHttpRequest;
-        xhr.open('POST','do_login.php',false);
+        xhr.open('POST','https://zhixueapp.applinzi.com/frontend/do_login.php',false);
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;");
         xhr.send(encodeURI('username='+username+'&person_name='+person_name+"&student_no="+student_no));
         var result=eval('('+xhr.responseText+')');
@@ -100,7 +99,7 @@ p{line-height:1.5em;font-size:12px;color:#95a2a9;margin-bottom:5px}
     }
     function get_last_exam() {
         var xhr=new XMLHttpRequest;
-        xhr.open('GET','/app/student/get/exam/list?&pageIndex=1&token='+token+'&pageSize=1&version=1.1',false);
+        xhr.open('GET','https://zhixueapp.applinzi.com/app/student/get/exam/list?&pageIndex=1&token='+token+'&pageSize=1&version=1.1',false);
         xhr.send(null);
         var result=eval('('+xhr.responseText+')');
         document.getElementById('exam-name').innerHTML=result['result'][0]['examName'];
@@ -124,7 +123,7 @@ p{line-height:1.5em;font-size:12px;color:#95a2a9;margin-bottom:5px}
     }
 	function get_ranks(exam_id) {
         var xhr=new XMLHttpRequest;
-        xhr.open("GET","get_classes.php?"+"examId="+exam_id+"&token="+token,false);
+        xhr.open("GET","https://zhixueapp.applinzi.com/frontend/get_classes.php?"+"examId="+exam_id+"&token="+token,false);
         xhr.send(null);
         var result=eval('('+xhr.responseText+')');
         result=result["result"]["examClasses"];
@@ -142,7 +141,7 @@ p{line-height:1.5em;font-size:12px;color:#95a2a9;margin-bottom:5px}
     }
     function get_rank(exam_id,class_id,callback) {
         var xhr=new XMLHttpRequest;
-        xhr.open("GET","get_class_rank.php?"+"examId="+exam_id+"&classId="+class_id+"&userScore="+user_score+"&token="+token,true);
+        xhr.open("GET","https://zhixueapp.applinzi.com/frontend/get_class_rank.php?"+"examId="+exam_id+"&classId="+class_id+"&userScore="+user_score+"&token="+token,true);
         xhr.onreadystatechange=function() {
             if(xhr.readyState==4) {
                 var result=eval('('+xhr.responseText+')');
