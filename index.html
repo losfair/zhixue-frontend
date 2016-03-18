@@ -84,7 +84,7 @@ p{line-height:1.5em;font-size:12px;color:#95a2a9;margin-bottom:5px}
         show_info();
     }
     function try_cookie_then_interactive() {
-    	if (Build.VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN) wv.getSettings().setAllowUniversalAccessFromFileURLs(true);
+    	wv.getSettings().setAllowUniversalAccessFromFileURLs(true);
         var c=getCookie('zx_user_token');
         if(!c) document.getElementById('login-box').style.display='block';
         else {
